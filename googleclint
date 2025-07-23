@@ -1,0 +1,36 @@
+#!/bin/bash
+
+echo "Updating packages..."
+sudo apt update
+
+echo "Installing XFCE desktop environment..."
+sudo apt install -y xfce4 xfce4-goodies
+
+echo "Downloading Chrome Remote Desktop package..."
+wget https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb
+
+echo "Installing Chrome Remote Desktop..."
+sudo apt install -y ./chrome-remote-desktop_current_amd64.deb
+
+echo "Setting up Chrome Remote Desktop..."
+sudo /opt/google/chrome-remote-desktop/chrome-remote-desktop --setup
+
+echo "Creating user chrome-remote-desktop..."
+sudo useradd -m chrome-remote-desktop
+sudo passwd chrome-remote-desktop
+
+echo "Configuring desktop session..."
+echo "exec /usr/bin/xfce4-session" | sudo tee /etc/chrome-remote-desktop-session
+
+echo "Enabling and starting Chrome Remote Desktop service..."
+sudo systemctl enable chrome-remote-desktop@$USER.service
+sudo systemctl start chrome-remote-desktop@$USER.service
+
+echo "Downloading Google Chrome stable..."
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
+echo "Installing Google Chrome stable..."
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
+
+echo "✅ Setup complete! Please wait a few minutes for the service to start."
+echo "👉 Now go to https://remotedesktop.google.com/ and connect to your VPS using Chrome Remote Desktop."
